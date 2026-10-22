@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVT Mafia Game - Seventeen Edition</title>
+    <meta name="description" content="Play the classic Mafia party game digitally themed around K-pop group SEVENTEEN (SVT). Features 13 member avatars, night/day phases, interactive voting, and a sleek neon dark theme.">
+    <!-- Google Fonts: Orbitron for titles, Inter for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 0. SPLASH LOADING SCREEN -->
+    <div id="splash-screen">
+        <div class="splash-content">
+            <div class="animated-logo splash-logo">
+                <svg viewBox="0 0 100 100" class="neon-svg">
+                    <!-- Official Seventeen (SVT) Logo Polygons -->
+                    <g fill="url(#neon-grad-splash)" class="logo-paths">
+                        <polygon points="20,24 38,24 53,52 35,52" />
+                        <polygon points="38,24 80,24 73,36 38,36" />
+                        <polygon points="63,36 52,56 42,56 53,36" />
+                        <polygon points="63,52 50,82 43,82 56,52" />
+                    </g>
+                    <defs>
+                        <linearGradient id="neon-grad-splash" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00f0ff" />
+                            <stop offset="50%" stop-color="#bc34fa" />
+                            <stop offset="100%" stop-color="#ff0055" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <h1 class="splash-title">SVT MAFIA</h1>
+            <p class="splash-subtitle">SEVENTEEN EDITION</p>
+            
+            <div class="splash-loading-container">
+                <div class="progress-bar-bg">
+                    <div id="splash-progress-bar" class="progress-bar-fill"></div>
+                </div>
+                <div id="splash-status-text" class="status-text">INITIALIZING SYSTEMS...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Canvas for ambient particles / matrix effects -->
+    <canvas id="bg-canvas"></canvas>
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Global Floating Utilities -->
+    <div class="global-controls">
+        <button id="btn-toggle-music" class="icon-btn" title="Toggle Music">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" fill="currentColor"/>
+            </svg>
+        </button>
+        <button id="btn-toggle-sound" class="icon-btn" title="Toggle Sound Effects">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" fill="currentColor"/>
+            </svg>
+        </button>
+        <button id="btn-global-settings" class="icon-btn" title="Game Settings">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+                <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" fill="currentColor"/>
+            </svg>
+        </button>
+        <button id="btn-global-history" class="icon-btn" title="Game History">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+                <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" fill="currentColor"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <main id="app-container">
+
+        <!-- 1. HOME SCREEN -->
+        <section id="screen-home" class="game-screen active">
+            <div class="logo-container">
+                <div class="animated-logo">
+                    <svg viewBox="0 0 100 100" class="neon-svg">
+                        <!-- Official Seventeen (SVT) Logo Polygons -->
+                        <g fill="url(#neon-grad)" class="logo-paths">
+                            <polygon points="20,24 38,24 53,52 35,52" />
+                            <polygon points="38,24 80,24 73,36 38,36" />
+                            <polygon points="63,36 52,56 42,56 53,36" />
+                            <polygon points="63,52 50,82 43,82 56,52" />
+                        </g>
+                        <defs>
+                            <linearGradient id="neon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00f0ff" />
+                                <stop offset="50%" stop-color="#bc34fa" />
+                                <stop offset="100%" stop-color="#ff0055" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <h1 class="game-title">SVT MAFIA</h1>
+                <p class="game-subtitle">SEVENTEEN EDITION</p>
+            </div>
+            
+            <p class="game-description" id="txt-game-desc">
+                An immersive digital companion for the game of trust, deception, and survival themed around SEVENTEEN (SVT). Play with friends in the room or synchronize across multiple browser tabs!
+            </p>
+
+            <div class="menu-buttons">
+                <button id="btn-start-game" class="btn primary-btn btn-glow">Start Game (Host)</button>
+                <button id="btn-join-game" class="btn secondary-btn">Join Room</button>
+                <button id="btn-how-to-play" class="btn text-btn">How to Play</button>
+            </div>
+        </section>
+
+        <!-- 2. CREATE ROOM SCREEN -->
+        <section id="screen-create-room" class="game-screen">
+            <h2 class="screen-title" id="lbl-create-room">Create a Room</h2>
+            <div class="form-container glass-card">
+                <div class="input-group">
+                    <label for="input-room-name" id="lbl-room-name">Room Name</label>
+                    <input type="text" id="input-room-name" placeholder="e.g. Neon Shadows" maxlength="20">
+                </div>
+                
+                <div class="input-group">
+                    <label for="input-host-name" id="lbl-host-name">Host Name</label>
+                    <input type="text" id="input-host-name" placeholder="e.g. Agent Alpha" maxlength="15">
+                </div>
+
+                <div class="input-group">
+                    <label for="input-player-count" id="lbl-player-count">Target Players (4 - 15)</label>
+                    <div class="number-picker">
+                        <button type="button" class="btn-picker" id="btn-dec-players">-</button>
+                        <input type="number" id="input-player-count" value="6" min="4" max="15" readonly>
+                        <button type="button" class="btn-picker" id="btn-inc-players">+</button>
+                    </div>
+                </div>
+
+                <div class="button-row">
+                    <button id="btn-back-create" class="btn secondary-btn">Back</button>
+                    <button id="btn-submit-create" class="btn primary-btn">Create Room</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. JOIN ROOM SCREEN -->
+        <section id="screen-join-room" class="game-screen">
+            <h2 class="screen-title" id="lbl-join-room-title">Join a Room</h2>
+            <div class="form-container glass-card">
+                <div class="input-group">
+                    <label for="input-join-name" id="lbl-join-name">Your Name</label>
+                    <input type="text" id="input-join-name" placeholder="e.g. Mystery Guest" maxlength="15">
+                </div>
+
+                <div class="input-group">
+                    <label for="input-room-code" id="lbl-room-code">Room Code</label>
+                    <input type="text" id="input-room-code" placeholder="e.g. MF-ABCD" style="text-transform: uppercase;">
+                </div>
+
+                <div class="button-row">
+                    <button id="btn-back-join" class="btn secondary-btn">Back</button>
+                    <button id="btn-submit-join" class="btn primary-btn">Join Game</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. WAITING ROOM SCREEN -->
+        <section id="screen-waiting-room" class="game-screen">
+            <div class="room-header-details glass-card">
+                <div>
+                    <h3 id="txt-room-title-display">LOBBY: Neon Shadows</h3>
+                    <p class="code-box">Code: <span id="txt-room-code-display" class="neon-text">MF-ABCD</span></p>
+                </div>
+                <div class="badge" id="badge-player-count">0 / 0 Players</div>
+            </div>
+
+            <div class="lobby-columns">
+                <!-- Players List -->
+                <div class="lobby-players-container glass-card">
+                    <h4 id="lbl-joined-players">Joined Players</h4>
+                    <div id="lobby-players-list" class="players-grid">
+                        <!-- Dynamic Player Cards -->
+                    </div>
+                </div>
+
+                <!-- Host / Game Controls panel -->
+                <div class="lobby-settings-container glass-card">
+                    <h4 id="lbl-lobby-controls">Game Mode & Options</h4>
+                    
+                    <div class="setup-mode-selector">
+                        <label class="radio-card active">
+                            <input type="radio" name="play-mode" value="pass-and-play" checked>
+                            <div class="radio-content">
+                                <span class="radio-title" id="lbl-opt-passplay">Pass & Play</span>
+                                <span class="radio-desc" id="lbl-desc-passplay">Play together on this single device by passing it around.</span>
+                            </div>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="play-mode" value="multi-tab">
+                            <div class="radio-content">
+                                <span class="radio-title" id="lbl-opt-multitab">Multi-Tab Sync</span>
+                                <span class="radio-desc" id="lbl-desc-multitab">Open other tabs and join this room code to play on separate screens.</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Pass and Play player addition (Only visible if Host and Pass & Play selected) -->
+                    <div id="pass-play-add-players" class="control-box">
+                        <label for="input-add-player-name" id="lbl-add-friend">Add Friend to Lobby</label>
+                        <div class="inline-input">
+                            <input type="text" id="input-add-player-name" placeholder="Friend's Name" maxlength="15">
+                            <button id="btn-add-player-lobby" class="btn primary-btn">+</button>
+                        </div>
+                    </div>
+
+                    <div class="lobby-actions">
+                        <button id="btn-leave-room" class="btn danger-btn">Leave Room</button>
+                        <button id="btn-start-game-lobby" class="btn primary-btn btn-glow" disabled>Start Game</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. ROLE REVEAL SCREEN -->
+        <section id="screen-role-reveal" class="game-screen">
+            <h2 class="screen-title" id="lbl-role-assignment">Role Assignment</h2>
+            
+            <div class="reveal-card-container">
+                <!-- Privacy screen overlay -->
+                <div id="reveal-privacy-overlay" class="privacy-overlay active">
+                    <div class="avatar-holder" id="reveal-player-avatar"></div>
+                    <h3 id="txt-reveal-player-name">Hey Agent Alpha, it's your turn!</h3>
+                    <p id="txt-reveal-prompt">Confirm you are alone and click the button to see your secret role.</p>
+                    <button id="btn-reveal-private" class="btn primary-btn btn-glow">Reveal My Role</button>
+                </div>
+
+                <!-- The Actual Role Card -->
+                <div id="reveal-role-card" class="role-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <!-- SVG Role Graphics or Neon Art -->
+                            <div class="role-icon-container" id="reveal-role-icon"></div>
+                            <h2 class="role-name" id="txt-reveal-role-name">MAFIA</h2>
+                            <p class="role-alignment" id="txt-reveal-role-alignment">Alignment: Evil</p>
+                            <p class="role-description" id="txt-reveal-role-desc">
+                                Eliminate citizens without getting caught. Coordinate with your fellow mafia members at night.
+                            </p>
+                            <div class="mafia-partners-list" id="reveal-partners-container" style="display: none;">
+                                <h4 id="lbl-mafia-partners">Your Mafia Partners:</h4>
+                                <ul id="list-mafia-partners"></ul>
+                            </div>
+                            <button id="btn-hide-role" class="btn secondary-btn">Hide Role & Continue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. NIGHT PHASE SCREEN -->
+        <section id="screen-night-phase" class="game-screen">
+            <div class="phase-header">
+                <span class="phase-badge night-badge" id="lbl-night-badge">NIGHT PHASE</span>
+                <h2 id="lbl-night-title">Night Falls...</h2>
+                <p id="lbl-night-desc">The town goes to sleep and active roles wake up to perform their duties in secret.</p>
+            </div>
+
+            <!-- Client Status for Citizen/Inactive (Multi-Tab) -->
+            <div id="night-waiting-panel" class="waiting-panel glass-card" style="display: none;">
+                <div class="spinner"></div>
+                <h3 id="txt-night-wait-title">You are asleep...</h3>
+                <p id="txt-night-wait-desc">Wait for the active roles (Mafia, Detective, Doctor) to finish their nighttime actions.</p>
+            </div>
+
+            <!-- Night Action Panel (Active player turn) -->
+            <div id="night-action-panel" class="action-panel glass-card">
+                <!-- Instruction Header -->
+                <div class="action-instruction">
+                    <div class="avatar-holder" id="night-actor-avatar"></div>
+                    <div>
+                        <h3 id="txt-night-instruction-title">Mafia Turn: Select a target</h3>
+                        <p id="txt-night-instruction-desc">Choose a player to eliminate tonight.</p>
+                    </div>
+                </div>
+
+                <!-- Night Privacy Screen (Only for Pass & Play) -->
+                <div id="night-privacy-overlay" class="privacy-overlay active">
+                    <h3 id="txt-night-privacy-title">Pass the device to: <span id="txt-night-privacy-target" class="neon-text">Agent Alpha</span></h3>
+                    <p id="txt-night-privacy-desc">Make sure others cannot see the screen, then press reveal to proceed with your night action.</p>
+                    <button id="btn-night-reveal" class="btn primary-btn btn-glow">Wake Up</button>
+                </div>
+
+                <!-- targets list -->
+                <div class="action-targets">
+                    <h4 id="lbl-select-target">Select a Player:</h4>
+                    <div id="night-targets-grid" class="players-grid selection-grid">
+                        <!-- Dynamic Alive Players Selection Card -->
+                    </div>
+                </div>
+
+                <!-- Investigation result / Feedback box -->
+                <div id="night-feedback-box" class="feedback-box" style="display: none;">
+                    <h3 id="txt-night-feedback-title">Investigation Result</h3>
+                    <p id="txt-night-feedback-body" class="neon-text">The player is INNOCENT.</p>
+                </div>
+
+                <div class="action-confirm">
+                    <button id="btn-night-confirm" class="btn primary-btn btn-glow" disabled>Confirm Decision</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. DAY PHASE SCREEN -->
+        <section id="screen-day-phase" class="game-screen">
+            <div class="phase-header">
+                <span class="phase-badge day-badge" id="lbl-day-badge">DAY PHASE</span>
+                <h2 id="lbl-day-title">Day Breaks...</h2>
+                <p id="lbl-day-desc">The town wakes up to discuss the events of last night.</p>
+            </div>
+
+            <div class="day-layout">
+                <!-- Left panel: News & Timer -->
+                <div class="day-sidebar">
+                    <div class="news-ticker glass-card">
+                        <h3 id="lbl-night-report">Nightly Report:</h3>
+                        <div id="day-news-content" class="news-box">
+                            <!-- e.g. "Agent Alpha was eliminated last night!" or "No one died!" -->
+                        </div>
+                    </div>
+
+                    <div class="timer-card glass-card">
+                        <h3 id="lbl-discussion-timer">Discussion Timer</h3>
+                        <div class="countdown-timer" id="txt-day-timer">02:00</div>
+                        <div class="timer-controls">
+                            <button id="btn-timer-pause" class="btn secondary-btn icon-btn" title="Pause/Play">
+                                <svg viewBox="0 0 24 24" width="20" height="20">
+                                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                            <button id="btn-timer-skip" class="btn primary-btn" id="lbl-skip-discussion">Skip Discussion</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right panel: Player Status Grid -->
+                <div class="day-main glass-card">
+                    <h3 id="lbl-alive-players-status">Remaining Citizens</h3>
+                    <div id="day-players-grid" class="players-grid read-only">
+                        <!-- Alive/dead status of all players -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. VOTING SCREEN -->
+        <section id="screen-voting" class="game-screen">
+            <div class="phase-header">
+                <span class="phase-badge vote-badge" id="lbl-voting-badge">VOTING PHASE</span>
+                <h2 id="lbl-voting-title">Vanish the Deceiver</h2>
+                <p id="lbl-voting-desc">Vote for the player you suspect of being in the Mafia. Self-voting is prohibited.</p>
+            </div>
+
+            <!-- Re-vote notification if any -->
+            <div id="vote-revote-alert" class="alert-box warning-alert" style="display: none;">
+                <strong id="lbl-tie-detected">TIE VOTE DETECTED!</strong>
+                <span id="txt-revote-msg">A tie occurred between Player A and Player B. A re-vote is triggered. Only these tied players can be voted out.</span>
+            </div>
+
+            <!-- Wait for others in Multi-tab -->
+            <div id="vote-waiting-panel" class="waiting-panel glass-card" style="display: none;">
+                <div class="spinner"></div>
+                <h3 id="txt-vote-wait-title">Vote Submitted</h3>
+                <p id="txt-vote-wait-desc">Waiting for other players to submit their votes...</p>
+            </div>
+
+            <!-- Vote Action Panel (Pass & Play sequential or Multi-tab active) -->
+            <div id="vote-action-panel" class="action-panel glass-card">
+                <!-- Voter header (only relevant for pass and play) -->
+                <div class="action-instruction" id="vote-actor-header">
+                    <div class="avatar-holder" id="vote-actor-avatar"></div>
+                    <div>
+                        <h3><span id="txt-voter-name" class="neon-text">Agent Alpha</span>, cast your vote</h3>
+                        <p id="lbl-select-vote-target">Who is the Mafia?</p>
+                    </div>
+                </div>
+
+                <!-- Pass and Play Vote Privacy overlay -->
+                <div id="vote-privacy-overlay" class="privacy-overlay active">
+                    <h3>Pass the device to: <span id="txt-vote-privacy-target" class="neon-text">Agent Alpha</span></h3>
+                    <p id="lbl-vote-privacy-desc">Make sure others cannot see your vote, then click below to reveal the voting candidates.</p>
+                    <button id="btn-vote-reveal" class="btn primary-btn btn-glow">Cast Vote</button>
+                </div>
+
+                <!-- Vote Candidates -->
+                <div class="action-targets">
+                    <div id="vote-targets-grid" class="players-grid selection-grid">
+                        <!-- Players to vote for -->
+                    </div>
+                </div>
+
+                <!-- First Round Special Actions (Mafia, Doctor, Detective) -->
+                <div id="vote-special-action-container" style="display: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 20px; padding-top: 20px;">
+                    <h4 id="lbl-vote-special-title" style="color: var(--neon-purple); text-shadow: 0 0 10px var(--neon-purple-glow); margin-bottom: 12px;">Special Action Target</h4>
+                    <p id="lbl-vote-special-desc" style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">As Mafia/Doctor/Detective, select your target for tonight.</p>
+                    <div id="vote-special-targets-grid" class="players-grid selection-grid">
+                        <!-- Dynamic special action targets -->
+                    </div>
+                </div>
+
+                <div class="action-confirm">
+                    <button id="btn-vote-confirm" class="btn primary-btn btn-glow" disabled>Confirm Vote</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. ELIMINATION SCREEN -->
+        <section id="screen-elimination" class="game-screen">
+            <h2 class="screen-title" id="lbl-elimination-result">Elimination Result</h2>
+
+            <div class="elimination-card-container">
+                <div class="elimination-card glass-card">
+                    <div class="avatar-holder large-avatar" id="eliminated-player-avatar"></div>
+                    <h1 class="eliminated-player-name" id="txt-eliminated-name">Agent Alpha</h1>
+                    <p class="eliminated-status-text" id="txt-elimination-verdict">has been voted out by the town!</p>
+                    
+                    <div class="role-reveal-box">
+                        <span class="small-title" id="lbl-their-role-was">THEIR ROLE WAS</span>
+                        <div class="revealed-role-display" id="txt-eliminated-role">CITIZEN</div>
+                    </div>
+
+                    <button id="btn-elimination-continue" class="btn primary-btn btn-glow">Proceed</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. WINNER SCREEN -->
+        <section id="screen-winner" class="game-screen">
+            <div class="winner-congratulations">
+                <h1 class="winner-title neon-text-glow" id="txt-winner-team">CITIZENS WIN!</h1>
+                <p class="winner-subtitle" id="txt-winner-msg">All members of the Mafia have been eliminated from the town.</p>
+            </div>
+
+            <!-- Game Stats / Role Summary -->
+            <div class="game-stats-container glass-card">
+                <h3 id="lbl-game-summary">Game Summary</h3>
+                <div class="stats-summary-grid" id="winner-roles-list">
+                    <!-- Dynamic list of players and what their roles were -->
+                </div>
+            </div>
+
+            <div class="menu-buttons">
+                <button id="btn-winner-replay" class="btn primary-btn btn-glow">Play Again</button>
+                <button id="btn-winner-home" class="btn secondary-btn">Return Home</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SETTINGS MODAL -->
+    <div id="modal-settings" class="modal-overlay">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2 id="lbl-settings-title">Game Settings</h2>
+                <button id="btn-close-settings" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-group">
+                    <label for="settings-language" id="lbl-settings-lang">Language</label>
+                    <select id="settings-language">
+                        <option value="en" selected>English</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="it">Italiano</option>
+                    </select>
+                </div>
+
+                <div class="settings-group">
+                    <label for="settings-timer-duration" id="lbl-settings-timer">Discussion Timer</label>
+                    <select id="settings-timer-duration">
+                        <option value="60">1 Minute</option>
+                        <option value="120" selected>2 Minutes</option>
+                        <option value="180">3 Minutes</option>
+                        <option value="240">4 Minutes</option>
+                        <option value="300">5 Minutes</option>
+                    </select>
+                </div>
+
+                <div class="settings-group">
+                    <label for="settings-animation-speed" id="lbl-settings-speed">Animations Speed</label>
+                    <select id="settings-animation-speed">
+                        <option value="0.5">Fast (0.5x)</option>
+                        <option value="1" selected>Normal (1.0x)</option>
+                        <option value="1.5">Relaxed (1.5x)</option>
+                    </select>
+                </div>
+
+                <div class="settings-group checkbox-group">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="settings-music-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <span id="lbl-settings-music">Enable Background Music</span>
+                </div>
+
+                <div class="settings-group checkbox-group">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="settings-sound-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <span id="lbl-settings-sfx">Enable Sound Effects</span>
+                </div>
+
+                <div class="settings-group checkbox-group">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="settings-darkmode-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <span id="lbl-settings-darkmode">Neon Dark Theme</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HISTORY MODAL -->
+    <div id="modal-history" class="modal-overlay">
+        <div class="modal-content glass-card large-modal">
+            <div class="modal-header">
+                <h2 id="lbl-history-title">Game History</h2>
+                <button id="btn-close-history" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th id="th-date">Date & Time</th>
+                                <th id="th-room">Room</th>
+                                <th id="th-players">Players</th>
+                                <th id="th-winner">Winner</th>
+                                <th id="th-actions">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            <!-- Dynamic game history rows -->
+                            <tr>
+                                <td colspan="5" style="text-align: center;" id="txt-no-history">No games played yet. Let's start!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME HISTORY DETAIL POPUP (Embedded inside History Modal or standalone overlay) -->
+    <div id="modal-history-detail" class="modal-overlay sub-modal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h3 id="lbl-game-details-title">Match Details</h3>
+                <button id="btn-close-history-detail" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="history-detail-body">
+                <!-- Dynamically filled on detail click -->
+            </div>
+        </div>
+    </div>
+
+    <!-- DETECTIVE RESULT MODAL -->
+    <div id="modal-detective-result" class="modal-overlay">
+        <div class="modal-content glass-card" style="max-width: 380px; text-align: center; margin: 20vh auto;">
+            <div class="modal-header" style="justify-content: center;">
+                <h3 id="lbl-det-modal-title" style="color: var(--neon-purple); text-shadow: 0 0 10px var(--neon-purple-glow); margin: 0;">Investigation Result</h3>
+            </div>
+            <div class="modal-body" style="padding: 20px 0; display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                <div class="avatar-holder svt-avatar-holder" id="det-result-avatar" style="width: 80px; height: 80px; margin: 0 auto;"></div>
+                <h2 id="txt-det-result-name" class="neon-text">Woozi</h2>
+                <p style="font-size: 0.95rem; color: var(--text-secondary); margin: 0;">Alignment:</p>
+                <div id="txt-det-result-alignment" class="revealed-role-display" style="font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; display: inline-block;">MAFIA</div>
+            </div>
+            <div style="margin-top: 15px; text-align: center; padding-bottom: 10px;">
+                <button id="btn-det-result-ok" class="btn primary-btn btn-glow" style="min-width: 120px;">OK / Proceed</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMPORT SCRIPTS -->
+    <script src="audio.js"></script>
+    <script src="confetti.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
